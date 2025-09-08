@@ -1,0 +1,102 @@
+{% extends "base.html" %} {% block content %}
+<div
+  class="min-h-[80vh] bg-gradient-to-br from-blue-50 via-white to-purple-100 pb-12"
+>
+  <div class="max-w-7xl mx-auto px-4">
+    <div class="flex items-center gap-4 py-8">
+      <span class="material-icons text-4xl text-blue-600"
+        >assignment_turned_in</span
+      >
+      <div>
+        <h2 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-1">
+          My Applications
+        </h2>
+        <p class="text-gray-500 text-lg">
+          Track your job applications and their status here.
+        </p>
+      </div>
+    </div>
+    {% if applications|length == 0 %}
+    <div class="flex flex-col items-center justify-center py-24">
+      <span class="material-icons text-6xl text-gray-300 mb-4"
+        >hourglass_empty</span
+      >
+      <p class="text-xl text-gray-500 font-semibold">
+        You haven't applied to any jobs yet.
+      </p>
+    </div>
+    {% else %}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {% for app in applications %} {% set job = (jobs | selectattr('id',
+      'equalto', app.job_id) | list)[0] %}
+      <div
+        class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 flex flex-col h-80 hover:shadow-md transition-shadow duration-200 overflow-hidden"
+      >
+        <!-- Job Title and Company -->
+        <div class="mb-3 flex-shrink-0">
+          <h3 class="text-lg font-semibold text-gray-800 mb-1 truncate">
+            {{ job.title }}
+          </h3>
+          <p class="text-sm text-gray-600 truncate">{{ job.company }}</p>
+        </div>
+
+        <!-- Location -->
+        <div class="flex items-center gap-2 mb-2 flex-shrink-0">
+          <span class="material-icons text-sm text-gray-400 flex-shrink-0"
+            >place</span
+          >
+          <span class="text-sm text-gray-600 truncate">{{ job.location }}</span>
+        </div>
+
+        <!-- Salary -->
+        <div class="flex items-center gap-2 mb-2 flex-shrink-0">
+          <span class="material-icons text-sm text-gray-400 flex-shrink-0"
+            >payments</span
+          >
+          <span class="text-sm text-gray-600"
+            >{% if job.salary == 0.0 %}Not disclosed{% else %}${{ job.salary
+            }}{% endif %}</span
+          >
+        </div>
+
+        <!-- Application Date -->
+        <div class="flex items-center gap-2 mb-2 flex-shrink-0">
+          <span class="material-icons text-sm text-gray-400 flex-shrink-0"
+            >schedule</span
+          >
+          <span class="text-sm text-gray-600 truncate"
+            >Applied: {{ app.application_date.strftime('%Y-%m-%d') }}</span
+          >
+        </div>
+
+        <!-- Application Status -->
+        <div class="flex items-center gap-2 mb-3 flex-shrink-0">
+          <span
+            class="material-icons text-sm {% if app.status == 'Accepted' %}text-green-600{% elif app.status == 'Rejected' %}text-red-600{% else %}text-yellow-600{% endif %} flex-shrink-0"
+          >
+            {% if app.status == 'Accepted' %}check_circle{% elif app.status ==
+            'Rejected' %}cancel{% else %}pending{% endif %}
+          </span>
+          <span
+            class="text-sm font-medium {% if app.status == 'Accepted' %}text-green-700{% elif app.status == 'Rejected' %}text-red-700{% else %}text-yellow-700{% endif %}"
+          >
+            {{ app.status or 'Pending' }}
+          </span>
+        </div>
+
+        <!-- Action Button -->
+        <div class="flex gap-2 mt-auto flex-shrink-0">
+          <a
+            href="/analyze_job_match/{{ job.id }}"
+            class="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 px-3 rounded-lg text-center transition-colors"
+          >
+            View Analysis
+          </a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

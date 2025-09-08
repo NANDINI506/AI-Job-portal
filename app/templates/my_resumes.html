@@ -1,0 +1,519 @@
+{% extends "base.html" %} {% block title %}My AI Resumes{% endblock %} {% block
+content %}
+<div
+  class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-12"
+>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Hero Section -->
+    <div class="text-center mb-12">
+      <div
+        class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl mb-6 shadow-lg"
+      >
+        <svg
+          class="w-10 h-10 text-white"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+          ></path>
+        </svg>
+      </div>
+      <h1
+        class="text-5xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-indigo-900 bg-clip-text text-transparent mb-6"
+      >
+        My AI Resumes
+      </h1>
+      <p class="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed mb-8">
+        Manage, preview, and download your professionally crafted AI-generated
+        resumes
+      </p>
+
+      <!-- Create New Resume Button -->
+      <a
+        href="/resume-builder"
+        class="group inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white bg-gradient-to-r from-blue-600 to-indigo-700 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-blue-300"
+      >
+        <svg
+          class="w-5 h-5 mr-2 group-hover:animate-pulse"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+          ></path>
+        </svg>
+        Create New Resume
+      </a>
+    </div>
+
+    {% if resumes %}
+    <!-- Stats Section -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div
+        class="bg-white/70 backdrop-blur-sm rounded-xl p-6 border border-white/20 shadow-sm hover:shadow-md transition-all duration-300"
+      >
+        <div class="flex items-center">
+          <div
+            class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4"
+          >
+            <svg
+              class="w-6 h-6 text-blue-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+              ></path>
+            </svg>
+          </div>
+          <div>
+            <p class="text-2xl font-bold text-gray-900">{{ resumes|length }}</p>
+            <p class="text-sm text-gray-600">Total Resumes</p>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="bg-white/70 backdrop-blur-sm rounded-xl p-6 border border-white/20 shadow-sm hover:shadow-md transition-all duration-300"
+      >
+        <div class="flex items-center">
+          <div
+            class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mr-4"
+          >
+            <svg
+              class="w-6 h-6 text-green-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+              ></path>
+            </svg>
+          </div>
+          <div>
+            <p class="text-2xl font-bold text-gray-900">{{ resumes|length }}</p>
+            <p class="text-sm text-gray-600">Active Resumes</p>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="bg-white/70 backdrop-blur-sm rounded-xl p-6 border border-white/20 shadow-sm hover:shadow-md transition-all duration-300"
+      >
+        <div class="flex items-center">
+          <div
+            class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mr-4"
+          >
+            <svg
+              class="w-6 h-6 text-purple-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+              ></path>
+            </svg>
+          </div>
+          <div>
+            <p class="text-2xl font-bold text-gray-900">
+              {{ resumes[0].created_at.split(' ')[0] if resumes else 'N/A' }}
+            </p>
+            <p class="text-sm text-gray-600">Latest Created</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Resumes Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {% for resume in resumes %}
+      <div
+        class="group bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/30 overflow-hidden hover:shadow-xl hover:scale-[1.02] transition-all duration-300"
+      >
+        <!-- Resume Header -->
+        <div class="p-6 border-b border-gray-200/50">
+          <div class="flex justify-between items-start mb-4">
+            <h3
+              class="text-lg font-semibold text-gray-900 truncate group-hover:text-blue-600 transition-colors"
+            >
+              {{ resume.name }}
+            </h3>
+            <span
+              class="bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-800 text-xs px-3 py-1 rounded-full font-medium border border-blue-200"
+            >
+              {{ resume.template|title }}
+            </span>
+          </div>
+          <div class="flex items-center text-sm text-gray-500">
+            <svg
+              class="w-4 h-4 mr-1"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+              ></path>
+            </svg>
+            Created: {{ resume.created_at }}
+          </div>
+        </div>
+
+        <!-- Resume Preview -->
+        <div class="p-6">
+          {% if resume.content and resume.content.personal_info %}
+          <div class="mb-4">
+            <div class="flex items-center mb-2">
+              <div
+                class="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center mr-3"
+              >
+                <span class="text-white text-sm font-semibold">
+                  {{ resume.content.personal_info.name[0] if
+                  resume.content.personal_info.name else 'U' }}
+                </span>
+              </div>
+              <div>
+                <h4 class="font-semibold text-gray-900">
+                  {{ resume.content.personal_info.name }}
+                </h4>
+                <p class="text-sm text-gray-600">
+                  {{ resume.content.personal_info.email|default('No email') }}
+                </p>
+              </div>
+            </div>
+          </div>
+          {% endif %} {% if resume.content and
+          resume.content.professional_summary %}
+          <div class="mb-4">
+            <p class="text-sm text-gray-700 line-clamp-3 leading-relaxed">
+              {{ resume.content.professional_summary }}
+            </p>
+          </div>
+          {% endif %} {% if resume.content and resume.content.skills %}
+          <div class="mb-4">
+            <h5
+              class="text-sm font-semibold text-gray-900 mb-3 flex items-center"
+            >
+              <svg
+                class="w-4 h-4 mr-1 text-blue-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+                ></path>
+              </svg>
+              Key Skills
+            </h5>
+            <div class="flex flex-wrap gap-2">
+              {% for skill in resume.content.skills.technical_skills %} {% if
+              loop.index <= 4 %}
+              <span
+                class="bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 text-xs px-3 py-1 rounded-full border border-blue-200 font-medium"
+              >
+                {{ skill }}
+              </span>
+              {% endif %} {% endfor %} {% if
+              resume.content.skills.technical_skills|length > 4 %}
+              <span
+                class="bg-gray-100 text-gray-600 text-xs px-3 py-1 rounded-full font-medium"
+              >
+                +{{ resume.content.skills.technical_skills|length - 4 }} more
+              </span>
+              {% endif %}
+            </div>
+          </div>
+          {% endif %}
+        </div>
+
+        <!-- Action Buttons -->
+        <div
+          class="p-4 bg-gradient-to-r from-gray-50 to-blue-50/30 border-t border-gray-200/50"
+        >
+          <div class="flex space-x-3">
+            <a
+              href="/resume-preview/{{ resume.id }}"
+              class="flex-1 bg-gradient-to-r from-blue-600 to-indigo-700 text-white text-center py-2.5 px-3 rounded-lg hover:from-blue-700 hover:to-indigo-800 transition-all duration-200 text-sm font-medium shadow-sm hover:shadow-md transform hover:-translate-y-0.5 flex items-center justify-center"
+            >
+              <svg
+                class="w-4 h-4 mr-1"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                ></path>
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                ></path>
+              </svg>
+              View
+            </a>
+            <a
+              href="/download-resume/{{ resume.id }}"
+              class="flex-1 bg-gradient-to-r from-gray-600 to-gray-700 text-white text-center py-2.5 px-3 rounded-lg hover:from-gray-700 hover:to-gray-800 transition-all duration-200 text-sm font-medium shadow-sm hover:shadow-md transform hover:-translate-y-0.5 flex items-center justify-center"
+            >
+              <svg
+                class="w-4 h-4 mr-1"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                ></path>
+              </svg>
+              Download
+            </a>
+            <button
+              data-resume-id="{{ resume.id }}"
+              data-resume-name="{{ resume.name }}"
+              onclick="deleteResume(this.dataset.resumeId, this.dataset.resumeName)"
+              class="flex-1 bg-gradient-to-r from-red-600 to-red-700 text-white py-2.5 px-3 rounded-lg hover:from-red-700 hover:to-red-800 transition-all duration-200 text-sm font-medium shadow-sm hover:shadow-md transform hover:-translate-y-0.5 flex items-center justify-center"
+            >
+              <svg
+                class="w-4 h-4 mr-1"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                ></path>
+              </svg>
+              Delete
+            </button>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    {% else %}
+    <!-- Empty State -->
+    <div
+      class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/30 p-12 text-center"
+    >
+      <div
+        class="w-24 h-24 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-full flex items-center justify-center mx-auto mb-6"
+      >
+        <svg
+          class="w-12 h-12 text-blue-600"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+          ></path>
+        </svg>
+      </div>
+      <h3 class="text-2xl font-bold text-gray-900 mb-4">No Resumes Yet</h3>
+      <p class="text-gray-600 mb-8 max-w-md mx-auto leading-relaxed">
+        You haven't created any AI-generated resumes yet. Start by creating your
+        first professional resume using our intelligent AI builder.
+      </p>
+      <a
+        href="/resume-builder"
+        class="group inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white bg-gradient-to-r from-blue-600 to-indigo-700 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-blue-300"
+      >
+        <svg
+          class="w-5 h-5 mr-2 group-hover:animate-pulse"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M13 10V3L4 14h7v7l9-11h-7z"
+          ></path>
+        </svg>
+        Create Your First Resume
+      </a>
+    </div>
+    {% endif %}
+
+    <!-- Features Section -->
+    {% if resumes %}
+    <div
+      class="mt-16 bg-white/60 backdrop-blur-sm rounded-xl p-8 border border-white/30"
+    >
+      <div class="text-center mb-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-2">
+          Resume Management Features
+        </h2>
+        <p class="text-gray-600">
+          Everything you need to manage your professional resumes
+        </p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="text-center group">
+          <div
+            class="w-16 h-16 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300"
+          >
+            <svg
+              class="w-8 h-8 text-blue-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+              ></path>
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+              ></path>
+            </svg>
+          </div>
+          <h3 class="font-semibold text-gray-900 mb-2">Preview & Review</h3>
+          <p class="text-gray-600 text-sm leading-relaxed">
+            View your generated resumes in detail before downloading or applying
+            to ensure they meet your requirements.
+          </p>
+        </div>
+        <div class="text-center group">
+          <div
+            class="w-16 h-16 bg-gradient-to-br from-green-100 to-emerald-100 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300"
+          >
+            <svg
+              class="w-8 h-8 text-green-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+              ></path>
+            </svg>
+          </div>
+          <h3 class="font-semibold text-gray-900 mb-2">Download PDF</h3>
+          <p class="text-gray-600 text-sm leading-relaxed">
+            Download professional, ATS-optimized PDF resumes ready for job
+            applications and interviews.
+          </p>
+        </div>
+        <div class="text-center group">
+          <div
+            class="w-16 h-16 bg-gradient-to-br from-purple-100 to-pink-100 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300"
+          >
+            <svg
+              class="w-8 h-8 text-purple-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+              ></path>
+            </svg>
+          </div>
+          <h3 class="font-semibold text-gray-900 mb-2">Regenerate & Improve</h3>
+          <p class="text-gray-600 text-sm leading-relaxed">
+            Regenerate resumes with new prompts or improve existing ones to
+            better match your career goals.
+          </p>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<script>
+  function deleteResume(resumeId, resumeName) {
+    if (
+      confirm(
+        `Are you sure you want to delete "${resumeName}"? This action cannot be undone.`
+      )
+    ) {
+      fetch(`/delete-resume/${resumeId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.success) {
+            // Reload the page to show updated list
+            window.location.reload();
+          } else {
+            alert("Error deleting resume: " + data.message);
+          }
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          alert("An error occurred while deleting the resume.");
+        });
+    }
+  }
+</script>
+
+<style>
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>
+{% endblock %}

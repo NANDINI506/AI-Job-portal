@@ -1,0 +1,74 @@
+{% extends "base.html" %} {% block content %}
+<div
+  class="flex justify-center items-center min-h-[60vh] bg-gradient-to-br from-blue-50 via-white to-purple-100 py-8"
+>
+  <div class="w-full max-w-lg bg-white rounded-xl shadow p-8">
+    <h2 class="text-2xl font-bold mb-6 text-gray-800 text-center">New Jobs</h2>
+    {% if error %}
+    <div class="bg-red-100 text-red-700 px-4 py-2 rounded mb-4 text-center">
+      {{ error }}
+    </div>
+    {% endif %} {% if success and message %}
+    <div class="bg-green-100 text-green-700 px-4 py-2 rounded mb-4 text-center">
+      <pre class="whitespace-pre-wrap">{{ message }}</pre>
+    </div>
+    {% endif %}
+    <form action="/scrape-jobs" method="post" class="space-y-4">
+      <div>
+        <label for="job_title" class="block text-gray-600 mb-1"
+          >Job Title</label
+        >
+        <input
+          type="text"
+          id="job_title"
+          name="job_title"
+          required
+          placeholder="e.g., Software Engineer, Data Scientist"
+          class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+        />
+      </div>
+      <div>
+        <label for="location" class="block text-gray-600 mb-1">Location</label>
+        <input
+          type="text"
+          id="location"
+          name="location"
+          required
+          placeholder="e.g., New York, NY"
+          class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+        />
+      </div>
+      <div>
+        <label for="num_pages" class="block text-gray-600 mb-1"
+          >Number of Pages to Scrape</label
+        >
+        <input
+          type="number"
+          id="num_pages"
+          name="num_pages"
+          min="1"
+          max="5"
+          value="2"
+          class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+        />
+        <small class="text-gray-500"
+          >Each page contains approximately 10 jobs</small
+        >
+      </div>
+      <div class="flex gap-4 justify-end">
+        <button
+          type="submit"
+          class="bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold shadow hover:bg-blue-700 transition"
+        >
+          Start Scraping
+        </button>
+        <a
+          href="/dashboard"
+          class="bg-gray-200 text-gray-700 px-6 py-2 rounded-lg font-semibold shadow hover:bg-gray-300 transition"
+          >Cancel</a
+        >
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

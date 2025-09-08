@@ -1,0 +1,157 @@
+{% extends "base.html" %} {% block content %}
+<div
+  class="min-h-[80vh] bg-gradient-to-br from-blue-50 via-white to-purple-100 pb-12 flex justify-center items-center"
+>
+  <div
+    class="w-full max-w-lg bg-white rounded-2xl shadow-xl p-6 sm:p-8 md:p-10 mx-2"
+  >
+    <h2 class="text-2xl md:text-3xl font-bold mb-6 text-gray-800 text-center">
+      Edit Job
+    </h2>
+    <form method="POST" action="/edit-job/{{ job_id }}" class="space-y-6">
+      <div>
+        <label for="title" class="block text-gray-600 mb-1 font-medium"
+          >Job Title</label
+        >
+        <input
+          type="text"
+          id="title"
+          name="title"
+          value="{{ job.title }}"
+          required
+          class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50 text-base"
+        />
+      </div>
+      <div>
+        <label for="company" class="block text-gray-600 mb-1 font-medium"
+          >Company</label
+        >
+        <input
+          type="text"
+          id="company"
+          name="company"
+          value="{{ job.company }}"
+          required
+          class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50 text-base"
+        />
+      </div>
+      <div>
+        <label for="location" class="block text-gray-600 mb-1 font-medium"
+          >Location</label
+        >
+        <input
+          type="text"
+          id="location"
+          name="location"
+          value="{{ job.location }}"
+          required
+          class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50 text-base"
+        />
+      </div>
+      <div>
+        <label for="description" class="block text-gray-600 mb-1 font-medium"
+          >Description</label
+        >
+        <textarea
+          id="description"
+          name="description"
+          rows="4"
+          placeholder="Enter job description..."
+          class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50 text-base"
+        >
+{{ job.description or '' }}</textarea
+        >
+      </div>
+      <div>
+        <label for="salary" class="block text-gray-600 mb-1 font-medium"
+          >Salary</label
+        >
+        <input
+          type="number"
+          id="salary"
+          name="salary"
+          value="{{ job.salary }}"
+          required
+          class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50 text-base"
+        />
+      </div>
+      <div>
+        <label for="skills" class="block text-gray-600 mb-1 font-medium"
+          >Required Skills</label
+        >
+        <textarea
+          id="skills"
+          name="skills"
+          required
+          class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50 text-base"
+        >
+{{ job.skills }}</textarea
+        >
+      </div>
+      <div>
+        <label for="experience_level" class="block text-gray-600 mb-1 font-medium"
+          >Experience Level</label
+        >
+        <select
+          id="experience_level"
+          name="experience_level"
+          required
+          class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50 text-base"
+        >
+          <option value="Entry-level" {% if job.experience_level == 'Entry-level' %}selected{% endif %}>Entry-level</option>
+          <option value="Mid-level" {% if job.experience_level == 'Mid-level' %}selected{% endif %}>Mid-level</option>
+          <option value="Mid-Senior" {% if job.experience_level == 'Mid-Senior' %}selected{% endif %}>Mid-Senior</option>
+          <option value="Senior" {% if job.experience_level == 'Senior' %}selected{% endif %}>Senior</option>
+          <option value="Lead" {% if job.experience_level == 'Lead' %}selected{% endif %}>Lead</option>
+          <option value="Manager" {% if job.experience_level == 'Manager' %}selected{% endif %}>Manager</option>
+        </select>
+      </div>
+      <div>
+        <label for="job_type" class="block text-gray-600 mb-1 font-medium"
+          >Job Type</label
+        >
+        <select
+          id="job_type"
+          name="job_type"
+          required
+          class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50 text-base"
+        >
+          <option value="Full-time" {% if job.job_type == 'Full-time' %}selected{% endif %}>Full-time</option>
+          <option value="Part-time" {% if job.job_type == 'Part-time' %}selected{% endif %}>Part-time</option>
+          <option value="Contract" {% if job.job_type == 'Contract' %}selected{% endif %}>Contract</option>
+          <option value="Internship" {% if job.job_type == 'Internship' %}selected{% endif %}>Internship</option>
+          <option value="Freelance" {% if job.job_type == 'Freelance' %}selected{% endif %}>Freelance</option>
+        </select>
+      </div>
+      <div>
+        <label for="remote_policy" class="block text-gray-600 mb-1 font-medium"
+          >Remote Policy</label
+        >
+        <select
+          id="remote_policy"
+          name="remote_policy"
+          required
+          class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50 text-base"
+        >
+          <option value="On-site" {% if job.remote_policy == 'On-site' %}selected{% endif %}>On-site</option>
+          <option value="Remote" {% if job.remote_policy == 'Remote' %}selected{% endif %}>Remote</option>
+          <option value="Hybrid" {% if job.remote_policy == 'Hybrid' %}selected{% endif %}>Hybrid</option>
+        </select>
+      </div>
+      <div class="flex flex-col sm:flex-row gap-4 justify-end pt-4">
+        <button
+          type="submit"
+          class="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-2 rounded-lg font-semibold shadow hover:from-blue-700 hover:to-purple-700 transition"
+        >
+          Update Job
+        </button>
+        <a
+          href="/dashboard"
+          class="w-full sm:w-auto bg-gray-200 text-gray-700 px-8 py-2 rounded-lg font-semibold shadow hover:bg-gray-300 transition text-center"
+          >Cancel</a
+        >
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

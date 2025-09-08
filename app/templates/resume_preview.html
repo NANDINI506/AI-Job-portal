@@ -1,0 +1,335 @@
+{% extends "base.html" %} {% block title %}Resume Preview - {{ resume.name }}{%
+endblock %} {% block content %}
+<div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-8">
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">
+          📄 {{ resume.name }}
+        </h1>
+        <p class="text-gray-600">
+          Generated on {{ resume.created_at }} | Template: {{
+          resume.template|title }}
+        </p>
+      </div>
+      <div class="flex space-x-3">
+        <a
+          href="/resume-builder"
+          class="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition-colors text-sm font-medium"
+        >
+          ← Back to Builder
+        </a>
+        <a
+          href="/my-resumes"
+          class="bg-blue-700 text-white px-4 py-2 rounded-md hover:bg-blue-800 transition-colors text-sm font-medium"
+        >
+          My Resumes
+        </a>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
+      <div class="flex flex-wrap gap-3 justify-center">
+        <a
+          href="/download-resume/{{ resume.id }}"
+          class="bg-gray-700 text-white px-6 py-3 rounded-md font-medium hover:bg-gray-800 transition-colors flex items-center text-sm"
+        >
+          <span class="mr-2">📄</span>
+          Download PDF
+        </a>
+        <button
+          onclick="regenerateResume()"
+          class="bg-blue-700 text-white px-6 py-3 rounded-md font-medium hover:bg-blue-800 transition-colors flex items-center text-sm"
+        >
+          <span class="mr-2">🔄</span>
+          Regenerate
+        </button>
+        <a
+          href="/edit-resume/{{ resume.id }}"
+          class="bg-gray-600 text-white px-6 py-3 rounded-md font-medium hover:bg-gray-700 transition-colors flex items-center text-sm"
+        >
+          <span class="mr-2">✏️</span>
+          Edit Details
+        </a>
+        <button
+          onclick="deleteResume()"
+          class="bg-red-700 text-white px-6 py-3 rounded-md font-medium hover:bg-red-800 transition-colors flex items-center text-sm"
+        >
+          <span class="mr-2">🗑️</span>
+          Delete
+        </button>
+      </div>
+    </div>
+
+    <!-- Resume Content Preview -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+      <div class="max-w-4xl mx-auto">
+        {% if resume.content %}
+        <!-- Personal Information -->
+        {% if resume.content.personal_info %}
+        <div class="mb-8 pb-4 border-b border-gray-300">
+          <h1 class="text-2xl font-bold text-gray-900 mb-2">
+            {{ resume.content.personal_info.name|upper }}
+          </h1>
+          <div class="text-gray-600 text-sm">
+            {% if resume.content.personal_info.email %}
+            <span>{{ resume.content.personal_info.email }}</span>
+            {% endif %} {% if resume.content.personal_info.phone %}
+            <span> | {{ resume.content.personal_info.phone }}</span>
+            {% endif %} {% if resume.content.personal_info.location %}
+            <span> | {{ resume.content.personal_info.location }}</span>
+            {% endif %} {% if resume.content.personal_info.linkedin %}
+            <span>
+              |
+              <a
+                href="{{ resume.content.personal_info.linkedin }}"
+                target="_blank"
+                class="text-blue-600 hover:text-blue-800 underline"
+                >{{ resume.content.personal_info.linkedin }}</a
+              ></span
+            >
+            {% endif %}
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- Professional Summary -->
+        {% if resume.content.professional_summary %}
+        <div class="mb-8">
+          <h2 class="text-lg font-bold text-gray-900 mb-2">
+            PROFESSIONAL SUMMARY
+          </h2>
+          <div class="border-b border-gray-400 mb-3"></div>
+          <p class="text-gray-700 leading-relaxed text-sm">
+            {{ resume.content.professional_summary }}
+          </p>
+        </div>
+        {% endif %}
+
+        <!-- Work Experience -->
+        {% if resume.content.work_experience %}
+        <div class="mb-8">
+          <h2 class="text-lg font-bold text-gray-900 mb-2">
+            PROFESSIONAL EXPERIENCE
+          </h2>
+          <div class="border-b border-gray-400 mb-3"></div>
+          {% for job in resume.content.work_experience %}
+          <div class="mb-6">
+            <div class="mb-2">
+              <p class="text-sm font-semibold text-gray-900">
+                {{ job.title }} | {{ job.company }} {% if job.duration %} | {{
+                job.duration }}{% endif %}
+              </p>
+            </div>
+            {% if job.achievements %}
+            <ul class="list-disc list-inside space-y-1 ml-4">
+              {% for achievement in job.achievements %}
+              <li class="text-gray-700 text-sm">{{ achievement }}</li>
+              {% endfor %}
+            </ul>
+            {% endif %}
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Skills -->
+        {% if resume.content.skills %}
+        <div class="mb-8">
+          <h2 class="text-lg font-bold text-gray-900 mb-2">TECHNICAL SKILLS</h2>
+          <div class="border-b border-gray-400 mb-3"></div>
+          <div class="space-y-4">
+            {% if resume.content.skills.technical_skills %}
+            <div>
+              <p class="text-gray-900">
+                <strong>Technical Skills:</strong> {{
+                resume.content.skills.technical_skills|join(', ') }}
+              </p>
+            </div>
+            {% endif %} {% if resume.content.skills.soft_skills %}
+            <div>
+              <p class="text-gray-900">
+                <strong>Soft Skills:</strong> {{
+                resume.content.skills.soft_skills|join(', ') }}
+              </p>
+            </div>
+            {% endif %} {% if resume.content.skills.tools %}
+            <div>
+              <p class="text-gray-900">
+                <strong>Tools & Technologies:</strong> {{
+                resume.content.skills.tools|join(', ') }}
+              </p>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- Projects -->
+        {% if resume.content.projects %}
+        <div class="mb-8">
+          <h2 class="text-lg font-bold text-gray-900 mb-2">KEY PROJECTS</h2>
+          <div class="border-b border-gray-400 mb-3"></div>
+          {% for project in resume.content.projects %}
+          <div class="mb-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">
+              {{ project.name }}
+            </h3>
+            <p class="text-gray-700 mb-3">{{ project.description }}</p>
+            {% if project.achievements %}
+            <ul class="list-disc list-inside space-y-1">
+              {% for achievement in project.achievements %}
+              <li class="text-gray-700">{{ achievement }}</li>
+              {% endfor %}
+            </ul>
+            {% endif %}
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Education -->
+        {% if resume.content.education %}
+        <div class="mb-8">
+          <h2 class="text-lg font-bold text-gray-900 mb-2">EDUCATION</h2>
+          <div class="border-b border-gray-400 mb-3"></div>
+          {% for edu in resume.content.education %}
+          <div class="mb-4">
+            <div class="flex justify-between items-start">
+              <div>
+                <h3 class="font-semibold text-gray-900">{{ edu.degree }}</h3>
+                <p class="text-gray-700">{{ edu.institution }}</p>
+              </div>
+              <div class="text-right">
+                <p class="text-gray-600">{{ edu.year }}</p>
+                {% if edu.gpa %}
+                <p class="text-gray-600">GPA: {{ edu.gpa }}</p>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Certifications -->
+        {% if resume.content.certifications %}
+        <div class="mb-8">
+          <h2 class="text-lg font-bold text-gray-900 mb-2">CERTIFICATIONS</h2>
+          <div class="border-b border-gray-400 mb-3"></div>
+          {% for cert in resume.content.certifications %}
+          <div class="mb-4">
+            <div class="flex justify-between items-start">
+              <div>
+                <h3 class="font-semibold text-gray-900">{{ cert.name }}</h3>
+                <p class="text-gray-700">{{ cert.issuer }}</p>
+              </div>
+              <span class="text-gray-600">{{ cert.year }}</span>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %} {% else %}
+        <div class="text-center py-12">
+          <div class="text-6xl mb-4">📄</div>
+          <h3 class="text-xl font-semibold text-gray-900 mb-2">
+            Resume Content Not Available
+          </h3>
+          <p class="text-gray-600">
+            The resume content could not be loaded. Please try regenerating the
+            resume.
+          </p>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Regenerate Modal -->
+    <div
+      id="regenerateModal"
+      class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50"
+    >
+      <div class="bg-white rounded-lg p-8 max-w-md mx-4">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">
+          Regenerate Resume
+        </h3>
+        <p class="text-gray-600 mb-6">
+          Would you like to regenerate this resume with the same prompt or
+          modify it?
+        </p>
+        <div class="flex space-x-4">
+          <button
+            onclick="regenerateWithSamePrompt()"
+            class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          >
+            Same Prompt
+          </button>
+          <button
+            onclick="regenerateWithNewPrompt()"
+            class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+          >
+            New Prompt
+          </button>
+          <button
+            onclick="closeRegenerateModal()"
+            class="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function regenerateResume() {
+    document.getElementById("regenerateModal").classList.remove("hidden");
+    document.getElementById("regenerateModal").classList.add("flex");
+  }
+
+  function closeRegenerateModal() {
+    document.getElementById("regenerateModal").classList.add("hidden");
+    document.getElementById("regenerateModal").classList.remove("flex");
+  }
+
+  function regenerateWithSamePrompt() {
+    // Redirect to resume builder with the same prompt
+    window.location.href = `/resume-builder?regenerate={{ resume.id }}`;
+  }
+
+  function regenerateWithNewPrompt() {
+    // Redirect to resume builder for new prompt
+    window.location.href = "/resume-builder";
+  }
+
+  function deleteResume() {
+    if (
+      confirm(
+        "Are you sure you want to delete this resume? This action cannot be undone."
+      )
+    ) {
+      fetch(`/delete-resume/{{ resume.id }}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.success) {
+            window.location.href = "/my-resumes";
+          } else {
+            alert("Error deleting resume: " + data.message);
+          }
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          alert("An error occurred while deleting the resume.");
+        });
+    }
+  }
+</script>
+{% endblock %}

@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block content %}
+<div x-data="{ showModal: false, modalUser: {} }" class="min-h-[80vh] bg-gradient-to-br from-blue-50 via-white to-purple-100 pb-12">
+  <div class="max-w-7xl mx-auto px-4">
+    <div class="flex items-center gap-4 py-8">
+      <span class="material-icons text-4xl text-blue-600">supervisor_account</span>
+      <div>
+        <h2 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-1">All Job Applications</h2>
+        <p class="text-gray-500 text-lg">Review and manage all applications for posted jobs.</p>
+      </div>
+    </div>
+    {% if jobs|length == 0 %}
+    <div class="flex flex-col items-center justify-center py-24">
+      <span class="material-icons text-6xl text-gray-300 mb-4">work_off</span>
+      <p class="text-xl text-gray-500 font-semibold">No jobs posted yet.</p>
+    </div>
+    {% else %}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {% for job in jobs %}
+      <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 flex flex-col h-80 hover:shadow-md transition-shadow duration-200 overflow-hidden">
+        <!-- Job Title and Company -->
+        <div class="mb-3 flex-shrink-0">
+          <h3 class="text-lg font-semibold text-gray-800 mb-1 truncate">{{ job.title }}</h3>
+          <p class="text-sm text-gray-600 truncate">{{ job.company }}</p>
+        </div>
+
+        <!-- Location -->
+        <div class="flex items-center gap-2 mb-3 flex-shrink-0">
+          <span class="material-icons text-sm text-gray-400 flex-shrink-0">place</span>
+          <span class="text-sm text-gray-600 truncate">{{ job.location }}</span>
+        </div>
+
+        <!-- Applications Status -->
+        {% set job_applications = applications|selectattr('job_id', 'equalto', job.id)|list %}
+        {% if job_applications|length == 0 %}
+        <div class="flex flex-col items-center justify-center py-6 flex-1 min-h-0">
+          <span class="material-icons text-3xl text-gray-300 mb-2 flex-shrink-0">hourglass_empty</span>
+          <p class="text-gray-500 text-sm font-semibold text-center">No applications received for this job yet.</p>
+        </div>
+        {% else %}
+        <div class="space-y-2 flex-1 min-h-0 overflow-hidden">
+          <p class="text-xs text-gray-500 font-medium flex-shrink-0">{{ job_applications|length }} application(s)</p>
+          {% for application in job_applications %}
+          <div class="bg-gray-50 rounded-lg p-2 shadow-sm flex flex-col gap-1">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="material-icons text-blue-500">person</span>
+              <button type="button"
+                @click="showModal = true; modalUser = { name: '{{ user_map[application.id].name|e }}', email: '{{ user_map[application.id].email|e }}', phone: '{{ user_map[application.id].phone|e }}', is_admin: {{ 'true' if user_map[application.id].is_admin else 'false' }} }"
+                class="font-semibold text-gray-700 underline hover:text-blue-600 focus:outline-none">
+                {{ user_map[application.id].name }}
+              </button>
+              <span class="text-xs text-gray-400 ml-auto">Applied: {{ application.application_date.strftime('%Y-%m-%d %H:%M') }}</span>
+            </div>
+            <div class="text-gray-700 text-sm mb-1"><span class="font-semibold">Cover Letter:</span> {{ application.cover_letter }}</div>
+            <div class="flex items-center gap-2 mb-2">
+              <span class="material-icons text-base {% if application.status == 'Accepted' %}text-green-600{% elif application.status == 'Rejected' %}text-red-600{% else %}text-yellow-600{% endif %}">fiber_manual_record</span>
+              <span class="text-xs font-semibold {% if application.status == 'Accepted' %}text-green-700{% elif application.status == 'Rejected' %}text-red-700{% else %}text-yellow-700{% endif %}">{{ application.status or 'Pending' }}</span>
+              <form action="/update-application-status/{{ application.id }}" method="POST" class="ml-4">
+                <select name="status" onchange="this.form.submit()" class="rounded border-gray-300 text-xs px-2 py-1">
+                  <option value="Unviewed" {% if application.status == 'Unviewed' %}selected{% endif %}>Unviewed</option>
+                  <option value="Pending" {% if application.status == 'Pending' %}selected{% endif %}>Pending</option>
+                  <option value="Accepted" {% if application.status == 'Accepted' %}selected{% endif %}>Accepted</option>
+                  <option value="Rejected" {% if application.status == 'Rejected' %}selected{% endif %}>Rejected</option>
+                </select>
+              </form>
+            </div>
+            <div class="flex gap-2 mt-auto">
+              <form action="/delete-application/{{ application.id }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this application?')">
+                <button type="submit" class="bg-red-100 hover:bg-red-200 text-red-700 px-3 py-1 rounded transition text-xs font-medium">Delete</button>
+              </form>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+  <!-- User Detail Modal -->
+  <div x-show="showModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+    <div @click.away="showModal = false" class="bg-white rounded-xl shadow-xl p-8 w-full max-w-xs sm:max-w-sm md:max-w-md relative">
+      <button @click="showModal = false" class="absolute top-2 right-2 text-gray-400 hover:text-red-500 text-2xl focus:outline-none">&times;</button>
+      <h3 class="text-xl font-bold mb-4 text-blue-700">User Details</h3>
+      <template x-if="modalUser.is_admin">
+        <div class="text-lg font-semibold text-gray-700">admin</div>
+      </template>
+      <template x-if="!modalUser.is_admin">
+        <div class="space-y-2">
+          <div><span class="font-semibold text-gray-600">Name:</span> <span x-text="modalUser.name || 'N/A'"></span></div>
+          <div><span class="font-semibold text-gray-600">Email:</span> <span x-text="modalUser.email || 'N/A'"></span></div>
+          <div><span class="font-semibold text-gray-600">Phone:</span> <span x-text="modalUser.phone || 'N/A'"></span></div>
+        </div>
+      </template>
+      <!-- Debug output for troubleshooting -->
+      <div class="mt-4 text-xs text-gray-400">Debug: <span x-text="JSON.stringify(modalUser)"></span></div>
+    </div>
+  </div>
+</div>
+<!-- Alpine.js for modal logic -->
+<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+{% endblock %} 

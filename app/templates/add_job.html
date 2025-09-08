@@ -1,0 +1,151 @@
+{% extends "base.html" %} {% block content %}
+<div
+  class="min-h-[80vh] bg-gradient-to-br from-blue-50 via-white to-purple-100 pb-12 flex justify-center items-center"
+>
+  <div class="w-full max-w-lg bg-white rounded-2xl shadow-xl p-10">
+    <div class="flex items-center gap-3 mb-8">
+      <span class="material-icons text-4xl text-blue-600">add_box</span>
+      <h2 class="text-3xl font-extrabold text-gray-800">Add New Job</h2>
+    </div>
+    <form action="/add-job" method="post" class="space-y-6">
+      <div>
+        <label for="title" class="block text-gray-600 mb-1 font-medium"
+          >Job Title</label
+        >
+        <input
+          type="text"
+          id="title"
+          name="title"
+          required
+          class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50"
+        />
+      </div>
+      <div>
+        <label for="company" class="block text-gray-600 mb-1 font-medium"
+          >Company</label
+        >
+        <input
+          type="text"
+          id="company"
+          name="company"
+          required
+          class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50"
+        />
+      </div>
+      <div>
+        <label for="location" class="block text-gray-600 mb-1 font-medium"
+          >Location</label
+        >
+        <input
+          type="text"
+          id="location"
+          name="location"
+          required
+          class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50"
+        />
+      </div>
+      <div>
+        <label for="description" class="block text-gray-600 mb-1 font-medium"
+          >Description</label
+        >
+        <textarea
+          id="description"
+          name="description"
+          rows="4"
+          placeholder="Enter job description..."
+          class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50"
+        ></textarea>
+      </div>
+      <div>
+        <label for="salary" class="block text-gray-600 mb-1 font-medium"
+          >Salary</label
+        >
+        <input
+          type="number"
+          id="salary"
+          name="salary"
+          required
+          class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50"
+        />
+      </div>
+      <div>
+        <label for="skills" class="block text-gray-600 mb-1 font-medium"
+          >Skills (comma-separated)</label
+        >
+        <input
+          type="text"
+          id="skills"
+          name="skills"
+          required
+          class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50"
+        />
+      </div>
+      <div>
+        <label
+          for="experience_level"
+          class="block text-gray-600 mb-1 font-medium"
+          >Experience Level</label
+        >
+        <select
+          id="experience_level"
+          name="experience_level"
+          required
+          class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50"
+        >
+          <option value="Entry-level">Entry-level</option>
+          <option value="Mid-level">Mid-level</option>
+          <option value="Mid-Senior" selected>Mid-Senior</option>
+          <option value="Senior">Senior</option>
+          <option value="Lead">Lead</option>
+          <option value="Manager">Manager</option>
+        </select>
+      </div>
+      <div>
+        <label for="job_type" class="block text-gray-600 mb-1 font-medium"
+          >Job Type</label
+        >
+        <select
+          id="job_type"
+          name="job_type"
+          required
+          class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50"
+        >
+          <option value="Full-time" selected>Full-time</option>
+          <option value="Part-time">Part-time</option>
+          <option value="Contract">Contract</option>
+          <option value="Internship">Internship</option>
+          <option value="Freelance">Freelance</option>
+        </select>
+      </div>
+      <div>
+        <label for="remote_policy" class="block text-gray-600 mb-1 font-medium"
+          >Remote Policy</label
+        >
+        <select
+          id="remote_policy"
+          name="remote_policy"
+          required
+          class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50"
+        >
+          <option value="On-site" selected>On-site</option>
+          <option value="Remote">Remote</option>
+          <option value="Hybrid">Hybrid</option>
+        </select>
+      </div>
+      <div class="flex gap-4 justify-end pt-4">
+        <button
+          type="submit"
+          class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-2 rounded-lg font-semibold shadow hover:from-blue-700 hover:to-purple-700 transition"
+        >
+          Add Job
+        </button>
+        <a
+          href="/dashboard"
+          class="bg-gray-200 text-gray-700 px-8 py-2 rounded-lg font-semibold shadow hover:bg-gray-300 transition"
+          >Cancel</a
+        >
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

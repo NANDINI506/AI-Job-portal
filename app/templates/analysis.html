@@ -1,0 +1,215 @@
+{% extends "base.html" %} {% block content %}
+<div class="p-2 md:p-6">
+  <h1 class="text-3xl font-bold mb-8 text-gray-800 text-center">
+    Job Portal Analysis
+  </h1>
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div class="bg-white rounded-xl shadow p-6 flex flex-col">
+      <h2 class="text-lg font-semibold mb-4 text-blue-700">
+        Daily Applications
+      </h2>
+      <canvas id="applicationsChart" class="mb-4"></canvas>
+      <div class="text-sm text-gray-600 space-y-1">
+        <p>
+          Total Applications:
+          <span id="totalApplications" class="font-bold text-blue-700">0</span>
+        </p>
+        <p>
+          Most Active Day:
+          <span id="mostActiveDay" class="font-bold text-blue-700">-</span>
+        </p>
+      </div>
+    </div>
+    <div class="bg-white rounded-xl shadow p-6 flex flex-col">
+      <h2 class="text-lg font-semibold mb-4 text-blue-700">Popular Jobs</h2>
+      <canvas id="jobsChart" class="mb-4"></canvas>
+      <div class="text-sm text-gray-600 space-y-1">
+        <p>
+          Most Popular Job:
+          <span id="mostPopularJob" class="font-bold text-blue-700">-</span>
+        </p>
+        <p>
+          Total Applications:
+          <span id="mostPopularCount" class="font-bold text-blue-700">0</span>
+        </p>
+      </div>
+    </div>
+    <div class="bg-white rounded-xl shadow p-6 flex flex-col">
+      <h2 class="text-lg font-semibold mb-4 text-blue-700">
+        Application Status
+      </h2>
+      <canvas id="statusChart" class="mb-4"></canvas>
+      <div class="text-sm text-gray-600 space-y-1">
+        <p>
+          Total Jobs:
+          <span id="totalJobs" class="font-bold text-blue-700">0</span>
+        </p>
+        <p>
+          Active Jobs:
+          <span id="activeJobs" class="font-bold text-blue-700">0</span>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  // Fetch data from the backend
+  fetch("/api/analysis-data")
+    .then((response) => response.json())
+    .then((data) => {
+      // Calculate summary statistics
+      const totalApplications = data.application_counts.reduce(
+        (a, b) => a + b,
+        0
+      );
+      const maxApplications = Math.max(...data.application_counts);
+      const mostActiveDayIndex =
+        data.application_counts.indexOf(maxApplications);
+      const mostActiveDay = data.dates[mostActiveDayIndex];
+
+      const mostPopularJob = data.top_jobs[0];
+      const mostPopularCount = data.top_job_counts[0];
+
+      const totalJobs = data.status_counts.reduce((a, b) => a + b, 0);
+      const activeJobs =
+        data.status_counts[data.statuses.indexOf("Active")] || 0;
+
+      // Update summary elements
+      document.getElementById("totalApplications").textContent =
+        totalApplications;
+      document.getElementById("mostActiveDay").textContent = mostActiveDay;
+      document.getElementById("mostPopularJob").textContent = mostPopularJob;
+      document.getElementById("mostPopularCount").textContent =
+        mostPopularCount;
+      document.getElementById("totalJobs").textContent = totalJobs;
+      document.getElementById("activeJobs").textContent = activeJobs;
+
+      // Applications Over Time Chart
+      new Chart(document.getElementById("applicationsChart"), {
+        type: "line",
+        data: {
+          labels: data.dates,
+          datasets: [
+            {
+              label: "Applications",
+              data: data.application_counts,
+              backgroundColor: "rgba(54, 162, 235, 0.2)",
+              borderColor: "rgba(54, 162, 235, 1)",
+              borderWidth: 2,
+              tension: 0.1,
+              fill: true,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            title: {
+              display: true,
+              text: "Applications Received Each Day",
+              font: { size: 16 },
+            },
+            legend: {
+              display: false,
+            },
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                stepSize: 1,
+              },
+              title: {
+                display: true,
+                text: "Number of Applications",
+              },
+            },
+            x: {
+              title: {
+                display: true,
+                text: "Date",
+              },
+            },
+          },
+        },
+      });
+
+      // Most Applied Jobs Chart
+      new Chart(document.getElementById("jobsChart"), {
+        type: "doughnut",
+        data: {
+          labels: data.top_jobs,
+          datasets: [
+            {
+              data: data.top_job_counts,
+              backgroundColor: [
+                "#FF6384",
+                "#36A2EB",
+                "#FFCE56",
+                "#4BC0C0",
+                "#9966FF",
+              ],
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            title: {
+              display: true,
+              text: "Top 5 Most Applied Jobs",
+              font: { size: 16 },
+            },
+            legend: {
+              position: "right",
+            },
+          },
+        },
+      });
+
+      // Status Distribution Chart
+      new Chart(document.getElementById("statusChart"), {
+        type: "bar",
+        data: {
+          labels: data.statuses,
+          datasets: [
+            {
+              label: "Number of Jobs",
+              data: data.status_counts,
+              backgroundColor: "#4BC0C0",
+              borderColor: "#4BC0C0",
+              borderWidth: 1,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            title: {
+              display: true,
+              text: "Jobs by Status",
+              font: { size: 16 },
+            },
+            legend: {
+              display: false,
+            },
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                stepSize: 1,
+              },
+              title: {
+                display: true,
+                text: "Number of Jobs",
+              },
+            },
+          },
+        },
+      });
+    });
+</script>
+{% endblock %}

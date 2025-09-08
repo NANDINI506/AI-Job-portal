@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{% block title %}Job Portal{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      @keyframes wave {
+        0%,
+        100% {
+          transform: rotate(0deg);
+        }
+        25% {
+          transform: rotate(20deg);
+        }
+        75% {
+          transform: rotate(-15deg);
+        }
+      }
+      .animate-wave {
+        animation: wave 2s ease-in-out infinite;
+        transform-origin: 70% 70%;
+      }
+    </style>
+    {% block head %}{% endblock %}
+  </head>
+  <body class="bg-gray-100 min-h-screen">
+    <div class="flex min-h-screen">
+      <!-- Sidebar -->
+      <aside
+        class="w-20 bg-white shadow-lg flex flex-col items-center py-6 space-y-6"
+      >
+        <a href="/dashboard" class="text-2xl font-bold text-blue-600">JP</a>
+        <a href="/dashboard" title="Dashboard"
+          ><span class="material-icons">home</span></a
+        >
+        <a href="/analysis" title="Analysis"
+          ><span class="material-icons">analytics</span></a
+        >
+        {% if is_supervisor %}
+        <a href="/add-job" title="Add Job"
+          ><span class="material-icons">add_box</span></a
+        >
+        <a href="/view-applications" title="Applications"
+          ><span class="material-icons">assignment</span></a
+        >
+        <a href="/scrape-jobs" title="Scrape Jobs"
+          ><span class="material-icons">cloud_download</span></a
+        >
+        {% endif %}
+        <a href="/upload_resume" title="Upload Resume"
+          ><span class="material-icons">upload_file</span></a
+        >
+      </aside>
+      <!-- Main Content -->
+      <div class="flex-1 flex flex-col">
+        <!-- Top Nav -->
+        <header
+          class="bg-white shadow flex items-center justify-between px-8 py-4"
+        >
+          <nav class="flex items-center space-x-6">
+            <a
+              href="/dashboard"
+              class="font-semibold text-gray-700 hover:text-blue-600"
+              >Find Jobs</a
+            >
+            <a
+              href="/new-jobs"
+              class="font-semibold text-gray-700 hover:text-blue-600"
+              >New Jobs</a
+            >
+            <a
+              href="/analysis"
+              class="font-semibold text-gray-700 hover:text-blue-600"
+              >AI CV Analysis</a
+            >
+            <a
+              href="/resume-builder"
+              class="font-semibold text-gray-700 hover:text-blue-600"
+              >AI Resume Builder</a
+            >
+            <a href="#" class="font-semibold text-gray-700 hover:text-blue-600"
+              >Mock Interview</a
+            >
+            <a href="#" class="font-semibold text-gray-700 hover:text-blue-600"
+              >Career Coach</a
+            >
+            <a href="#" class="font-semibold text-gray-700 hover:text-blue-600"
+              >About</a
+            >
+          </nav>
+          <div class="flex items-center space-x-4">
+            {% if current_user %}
+            <!-- Notification Bell -->
+            <div class="relative notification-dropdown-container">
+              <button
+                onclick="toggleNotificationDropdown(event)"
+                class="focus:outline-none relative"
+              >
+                <span
+                  class="material-icons text-2xl text-gray-600 hover:text-blue-600"
+                  >notifications</span
+                >
+                <span
+                  id="notification-badge"
+                  class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center hidden"
+                  >0</span
+                >
+              </button>
+              <div
+                id="notificationDropdown"
+                class="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg py-2 z-50 hidden max-h-96 overflow-y-auto"
+              >
+                <div
+                  class="px-4 py-3 font-semibold text-gray-800 border-b flex justify-between items-center"
+                >
+                  <span>Notifications</span>
+                  <button
+                    onclick="markAllNotificationsRead()"
+                    class="text-blue-600 text-sm hover:underline"
+                  >
+                    Mark all read
+                  </button>
+                </div>
+                <div id="notification-list" class="py-2">
+                  <!-- Notifications will be loaded here -->
+                </div>
+                <div class="px-4 py-2 text-center text-gray-500 text-sm">
+                  <a href="/new-jobs" class="text-blue-600 hover:underline"
+                    >View all new jobs</a
+                  >
+                </div>
+              </div>
+            </div>
+
+            <!-- Profile Dropdown -->
+            <div class="relative profile-dropdown-container">
+              <button
+                onclick="toggleProfileDropdown(event)"
+                class="focus:outline-none"
+              >
+                <span class="material-icons text-3xl">person</span>
+              </button>
+              <div
+                id="profileDropdown"
+                class="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg py-2 z-50 hidden"
+              >
+                <div
+                  class="px-4 py-3 font-semibold text-gray-800 border-b uppercase tracking-wide text-sm"
+                >
+                  {{ user.email if user and user.email else current_user }}
+                </div>
+                <a
+                  href="/profile"
+                  class="flex items-center px-4 py-2 hover:bg-gray-100"
+                >
+                  <span class="material-icons mr-2 text-blue-600"
+                    >description</span
+                  >
+                  <span>Profile</span>
+                </a>
+                <a
+                  href="/my-resumes"
+                  class="flex items-center px-4 py-2 hover:bg-gray-100"
+                >
+                  <span class="material-icons mr-2 text-green-600"
+                    >description</span
+                  >
+                  <span>My Resumes</span>
+                </a>
+                {% if not is_supervisor %}
+                <a
+                  href="/my-applications"
+                  class="flex items-center px-4 py-2 hover:bg-gray-100"
+                >
+                  <span class="material-icons mr-2 text-blue-600"
+                    >assignment</span
+                  >
+                  <span>My Applications</span>
+                </a>
+                {% endif %}
+                <div class="border-t my-2"></div>
+                <a
+                  href="/logout"
+                  class="flex items-center px-4 py-2 text-red-600 hover:bg-red-50 font-semibold"
+                >
+                  <span class="material-icons mr-2">logout</span>
+                  <span>Logout</span>
+                </a>
+              </div>
+            </div>
+            {% else %}
+            <a href="/login" class="text-blue-600 font-semibold">Login</a>
+            {% endif %}
+          </div>
+        </header>
+        <!-- Main Page Content -->
+        <main class="flex-1 p-8">{% block content %}{% endblock %}</main>
+      </div>
+    </div>
+    <!-- Google Material Icons CDN -->
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+  </body>
+</html>
+
+<script>
+  // Notification functionality
+  let notifications = [];
+  let unreadCount = 0;
+
+  // Load notifications on page load
+  document.addEventListener("DOMContentLoaded", function () {
+    loadNotifications();
+    // Refresh notifications every 30 seconds
+    setInterval(loadNotifications, 30000);
+  });
+
+  async function loadNotifications() {
+    try {
+      const response = await fetch("/api/notifications");
+      if (response.ok) {
+        const data = await response.json();
+        notifications = data.notifications;
+        unreadCount = data.unread_count;
+        updateNotificationBadge();
+        updateNotificationList();
+      }
+    } catch (error) {
+      console.error("Error loading notifications:", error);
+    }
+  }
+
+  function updateNotificationBadge() {
+    const badge = document.getElementById("notification-badge");
+    if (unreadCount > 0) {
+      badge.textContent = unreadCount > 99 ? "99+" : unreadCount;
+      badge.classList.remove("hidden");
+    } else {
+      badge.classList.add("hidden");
+    }
+  }
+
+  function updateNotificationList() {
+    const list = document.getElementById("notification-list");
+    if (notifications.length === 0) {
+      list.innerHTML =
+        '<div class="px-4 py-3 text-gray-500 text-center">No notifications</div>';
+      return;
+    }
+
+    list.innerHTML = notifications
+      .map(
+        (notification) => `
+      <div class="px-4 py-3 hover:bg-gray-50 cursor-pointer ${
+        !notification.is_read ? "bg-blue-50" : ""
+      }" 
+           onclick="handleNotificationClick(${notification.id}, ${
+          notification.related_job_id || "null"
+        })">
+        <div class="flex justify-between items-start">
+          <div class="flex-1">
+            <div class="font-medium text-gray-900 text-sm">${
+              notification.title
+            }</div>
+            <div class="text-gray-600 text-xs mt-1">${
+              notification.message
+            }</div>
+            <div class="text-gray-400 text-xs mt-1">${formatTime(
+              notification.created_at
+            )}</div>
+          </div>
+          ${
+            !notification.is_read
+              ? '<div class="w-2 h-2 bg-blue-500 rounded-full ml-2"></div>'
+              : ""
+          }
+        </div>
+      </div>
+    `
+      )
+      .join("");
+  }
+
+  function formatTime(isoString) {
+    const date = new Date(isoString);
+    const now = new Date();
+    const diffMs = now - date;
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffMins < 1) return "Just now";
+    if (diffMins < 60) return `${diffMins}m ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+    if (diffDays < 7) return `${diffDays}d ago`;
+    return date.toLocaleDateString();
+  }
+
+  async function handleNotificationClick(notificationId, jobId) {
+    // Mark notification as read
+    try {
+      await fetch(`/api/notifications/${notificationId}/read`, {
+        method: "POST",
+      });
+      // Update local state
+      const notification = notifications.find((n) => n.id === notificationId);
+      if (notification) {
+        notification.is_read = true;
+        unreadCount = Math.max(0, unreadCount - 1);
+        updateNotificationBadge();
+        updateNotificationList();
+      }
+    } catch (error) {
+      console.error("Error marking notification as read:", error);
+    }
+
+    // Navigate to job if available
+    if (jobId) {
+      window.location.href = `/analyze_job_match/${jobId}`;
+    } else {
+      window.location.href = "/new-jobs";
+    }
+  }
+
+  async function markAllNotificationsRead() {
+    try {
+      await fetch("/api/notifications/read-all", { method: "POST" });
+      notifications.forEach((n) => (n.is_read = true));
+      unreadCount = 0;
+      updateNotificationBadge();
+      updateNotificationList();
+    } catch (error) {
+      console.error("Error marking all notifications as read:", error);
+    }
+  }
+
+  function toggleNotificationDropdown(event) {
+    event.stopPropagation();
+    const dropdown = document.getElementById("notificationDropdown");
+    if (dropdown.style.display === "block") {
+      dropdown.style.display = "none";
+    } else {
+      dropdown.style.display = "block";
+      loadNotifications(); // Refresh when opening
+    }
+  }
+
+  // Profile dropdown functionality
+  function toggleProfileDropdown(event) {
+    event.stopPropagation();
+    var dropdown = document.getElementById("profileDropdown");
+    if (dropdown.style.display === "block") {
+      dropdown.style.display = "none";
+    } else {
+      dropdown.style.display = "block";
+    }
+  }
+
+  // Close dropdowns when clicking outside
+  document.addEventListener("click", function (event) {
+    const profileDropdown = document.getElementById("profileDropdown");
+    const notificationDropdown = document.getElementById(
+      "notificationDropdown"
+    );
+
+    if (profileDropdown && profileDropdown.style.display === "block") {
+      if (!event.target.closest(".profile-dropdown-container")) {
+        profileDropdown.style.display = "none";
+      }
+    }
+
+    if (
+      notificationDropdown &&
+      notificationDropdown.style.display === "block"
+    ) {
+      if (!event.target.closest(".notification-dropdown-container")) {
+        notificationDropdown.style.display = "none";
+      }
+    }
+  });
+</script>

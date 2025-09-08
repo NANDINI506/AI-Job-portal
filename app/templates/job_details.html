@@ -1,0 +1,357 @@
+{% extends "base.html" %} {% block title %}{{ job.title }} at {{ job.company
+}}{% endblock %} {% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Simple Back Button -->
+    <div class="mb-6">
+      <a
+        href="javascript:history.back()"
+        class="inline-flex items-center gap-2 text-gray-600 hover:text-gray-800 font-medium transition-colors"
+      >
+        <span class="material-icons">arrow_back</span>
+        Back to Jobs
+      </a>
+    </div>
+
+    <!-- Clean Job Header -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-8 mb-8">
+      <div class="flex items-start justify-between mb-6">
+        <div class="flex-1">
+          <h1 class="text-3xl font-bold text-gray-900 mb-3">{{ job.title }}</h1>
+          <p class="text-xl text-gray-600 mb-6">{{ job.company }}</p>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="flex items-center gap-3">
+              <span class="material-icons text-gray-400">place</span>
+              <div>
+                <p class="text-sm text-gray-500">Location</p>
+                <p class="font-medium text-gray-900">{{ job.location }}</p>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+              <span class="material-icons text-gray-400">payments</span>
+              <div>
+                <p class="text-sm text-gray-500">Salary</p>
+                <p class="font-medium text-gray-900">
+                  {% if job.salary == 0.0 %}Not disclosed{% else %}${{
+                  job.salary|round|int }}{% endif %}
+                </p>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+              <span class="material-icons text-gray-400">schedule</span>
+              <div>
+                <p class="text-sm text-gray-500">Posted</p>
+                <p class="font-medium text-gray-900">
+                  {{ job.posted_date.strftime('%B %d, %Y') }}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Simple Action Buttons -->
+        <div class="flex flex-col gap-3 ml-6">
+          {% if applied %}
+          <div
+            class="bg-green-100 text-green-800 px-6 py-3 rounded-lg font-medium text-center border border-green-200"
+          >
+            <span class="material-icons text-sm mr-1">check_circle</span>
+            Applied
+          </div>
+          {% else %}
+          <a
+            href="/apply_job/{{ job.id }}"
+            class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium text-center transition-colors"
+          >
+            <span class="material-icons text-sm mr-1">send</span>
+            Apply Now
+          </a>
+          {% endif %}
+
+          <a
+            href="/analyze_job_match/{{ job.id }}"
+            class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-medium text-center transition-colors"
+          >
+            <span class="material-icons text-sm mr-1">analytics</span>
+            Analyze Match
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- Left Column - Job Details -->
+      <div class="lg:col-span-2 space-y-6">
+        <!-- Job Description -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
+          <h2
+            class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3"
+          >
+            <span class="material-icons text-gray-600">description</span>
+            Job Description
+          </h2>
+
+          <div class="prose prose-lg max-w-none">
+            {% if job.description %}
+            <div class="job-description">
+              {% if job.description_preview %}
+              <div id="preview-{{ job.id }}" class="preview-content">
+                <div class="text-gray-700 leading-relaxed">
+                  {{ job.description_preview|replace('\n', '<br />')|safe }}
+                </div>
+              </div>
+              {% if job.has_more %}
+              <div id="full-{{ job.id }}" class="full-content hidden">
+                <div class="text-gray-700 leading-relaxed">
+                  {{ job.description|replace('\n', '<br />')|safe }}
+                </div>
+              </div>
+              <button
+                onclick="toggleDescription({{ job.id }})"
+                class="text-blue-600 hover:text-blue-800 font-medium text-sm mt-4 transition-colors duration-200 bg-blue-50 hover:bg-blue-100 px-4 py-2 rounded-lg border border-blue-200"
+                id="toggle-btn-{{ job.id }}"
+              >
+                Read More
+              </button>
+              {% endif %} {% else %}
+              <!-- Fallback to full description -->
+              <div class="text-gray-700 leading-relaxed">
+                {{ job.description|replace('\n', '<br />')|safe }}
+              </div>
+              {% endif %}
+            </div>
+            {% else %}
+            <div class="text-center py-8">
+              <p class="text-gray-500">
+                No description available for this position.
+              </p>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Skills Section -->
+        {% if job.skills %}
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
+          <h2
+            class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3"
+          >
+            <span class="material-icons text-gray-600">build</span>
+            Required Skills
+          </h2>
+
+          <div class="flex flex-wrap gap-2">
+            {% for skill in job.skills.split(',') %}
+            <span
+              class="bg-gray-100 text-gray-700 px-3 py-1 rounded-lg text-sm font-medium border border-gray-200"
+            >
+              {{ skill.strip() }}
+            </span>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- Company Info -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
+          <h2
+            class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3"
+          >
+            <span class="material-icons text-gray-600">business</span>
+            Company Information
+          </h2>
+
+          <div class="bg-gray-50 rounded-lg p-6">
+            <h3 class="text-xl font-semibold text-gray-800 mb-3">
+              {{ job.company }}
+            </h3>
+            <p class="text-gray-600">
+              We're excited to have you join our team and contribute to our
+              mission.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column - Additional Info -->
+      <div class="lg:col-span-1 space-y-6">
+        <!-- Job Overview -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <h3
+            class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2"
+          >
+            <span class="material-icons text-gray-600">info</span>
+            Job Overview
+          </h3>
+          <div class="space-y-3">
+            <div
+              class="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+            >
+              <span class="text-sm text-gray-600">Experience Level</span>
+              <span class="font-medium text-gray-800"
+                >{{ job.experience_level or 'Mid-Senior' }}</span
+              >
+            </div>
+            <div
+              class="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+            >
+              <span class="text-sm text-gray-600">Job Type</span>
+              <span class="font-medium text-gray-800"
+                >{{ job.job_type or 'Full-time' }}</span
+              >
+            </div>
+            <div
+              class="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+            >
+              <span class="text-sm text-gray-600">Remote Policy</span>
+              <span class="font-medium text-gray-800"
+                >{{ job.remote_policy or 'On-site' }}</span
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <h3
+            class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2"
+          >
+            <span class="material-icons text-gray-600">flash_on</span>
+            Quick Actions
+          </h3>
+          <div class="space-y-3">
+            {% if not applied %}
+            <a
+              href="/apply_job/{{ job.id }}"
+              class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg font-medium text-center transition-colors flex items-center justify-center gap-2"
+            >
+              <span class="material-icons text-sm">send</span>
+              Apply for this Position
+            </a>
+            {% endif %}
+
+            <a
+              href="/analyze_job_match/{{ job.id }}"
+              class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-3 rounded-lg font-medium text-center transition-colors flex items-center justify-center gap-2"
+            >
+              <span class="material-icons text-sm">analytics</span>
+              Analyze Job Match
+            </a>
+
+            <button
+              class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-3 rounded-lg font-medium text-center transition-colors flex items-center justify-center gap-2"
+            >
+              <span class="material-icons text-sm">favorite_border</span>
+              Save Job
+            </button>
+          </div>
+        </div>
+
+        <!-- Similar Jobs -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <h3
+            class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2"
+          >
+            <span class="material-icons text-gray-600">search</span>
+            Similar Jobs
+          </h3>
+          <div class="text-center py-6">
+            <p class="text-gray-600 mb-4">
+              Find more opportunities like this one
+            </p>
+            <a
+              href="/new-jobs"
+              class="inline-flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors"
+            >
+              <span class="material-icons text-sm">search</span>
+              Browse Jobs
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- JavaScript removed - showing full description by default -->
+
+<style>
+  .prose {
+    max-width: none;
+  }
+
+  .prose p {
+    margin-bottom: 1.5rem;
+    line-height: 1.7;
+  }
+
+  .prose ul {
+    margin-bottom: 1.5rem;
+    padding-left: 1.5rem;
+  }
+
+  .prose li {
+    margin-bottom: 0.75rem;
+  }
+
+  /* Job description specific styles */
+  .job-description {
+    position: relative;
+  }
+
+  #description-full {
+    white-space: pre-line;
+    line-height: 1.8;
+    font-size: 1rem;
+    color: #374151;
+  }
+
+  #description-full br {
+    margin-bottom: 0.5rem;
+  }
+
+  /* Improve bullet point formatting */
+  #description-full ul {
+    list-style-type: disc;
+    padding-left: 1.5rem;
+    margin: 1rem 0;
+  }
+
+  #description-full li {
+    margin-bottom: 0.5rem;
+    line-height: 1.6;
+  }
+
+  /* Format section headers */
+  #description-full strong {
+    color: #1f2937;
+    font-weight: 600;
+  }
+</style>
+
+<script>
+  function toggleDescription(jobId) {
+    const previewDiv = document.getElementById(`preview-${jobId}`);
+    const fullDiv = document.getElementById(`full-${jobId}`);
+    const toggleBtn = document.getElementById(`toggle-btn-${jobId}`);
+
+    if (previewDiv && fullDiv && toggleBtn) {
+      if (fullDiv.classList.contains("hidden")) {
+        // Show full description
+        previewDiv.classList.add("hidden");
+        fullDiv.classList.remove("hidden");
+        toggleBtn.textContent = "Read Less";
+      } else {
+        // Show preview
+        previewDiv.classList.remove("hidden");
+        fullDiv.classList.add("hidden");
+        toggleBtn.textContent = "Read More";
+      }
+    }
+  }
+</script>
+{% endblock %}
