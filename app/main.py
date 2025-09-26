@@ -24,11 +24,24 @@ from .resume_builder.models import GeneratedResume
 from .resume_builder.pdf_generator import ResumePDFGenerator
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
+from sentence_transformers import SentenceTransformer
 
 # Create all tables
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
+
+# ------------------------
+# Initialize sentence-transformers model
+# ------------------------
+MODEL_PATH = "./models/all-MiniLM-L6-v2"
+
+if not os.path.exists(MODEL_PATH):
+    model = SentenceTransformer('all-MiniLM-L6-v2')
+    model.save(MODEL_PATH)
+else:
+    model = SentenceTransformer(MODEL_PATH)
+
 
 # Get paths from environment variables with fallbacks
 STATIC_DIR = os.environ.get('STATIC_DIR', 'app/static')
