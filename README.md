@@ -518,5 +518,3 @@ For support and questions:
 - **Community**: Join our discussion forum
 
 ---
-
-**Made with ❤️ by the Job Portal Team**
