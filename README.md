@@ -206,18 +206,6 @@ uvicorn app.main:app --reload
 uvicorn app.main:app --host 0.0.0.0 --port 8000
 ```
 
-### **Accessing the Application**
-
-- **Main Application**: http://localhost:8000
-- **API Documentation**: http://localhost:8000/docs
-- **Alternative Docs**: http://localhost:8000/redoc
-
-### **Default Admin Account**
-
-- **Username**: admin
-- **Password**: admin123
-- **Role**: Supervisor
-
 ## 🔌 API Endpoints
 
 ### **Authentication**
